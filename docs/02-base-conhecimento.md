@@ -69,9 +69,6 @@ Dados e Perfil do Cliente
     }
   ]
 }
-Perfil de Investidor
-Carteira Atual 
-
 ´´´
 
 ---
@@ -83,6 +80,7 @@ Carteira Atual
 ```
 Dados do Cliente:
 - Nome: João Silva
+- Idade : 32
 - Perfil: Moderado
 - Saldo disponível: R$ 5.000
 
