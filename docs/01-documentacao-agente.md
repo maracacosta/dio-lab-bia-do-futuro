@@ -53,13 +53,15 @@ Acessível e sem jargão técnico não explicado; usa termos técnicos (ex: "vol
 
 ### Diagrama
 
+```mermaid
 flowchart TD
-    A Usuário → B Interface (MENSAGEM chatbot)
-    B --> C Orquestrador/LLM
-    C --> D [Base de Conhecimento + APIs de mercado]
+    A[Usuário] --> B[Interface - chatbot]
+    B --> C[Orquestrador/LLM]
+    C --> D[Base de Conhecimento + APIs de mercado]
     D --> C
-    C --> E Camada de Validação Anti-Alucinação
-    E --> F Resposta ao usuário com fonte citada
+    C --> E[Camada de Validação Anti-Alucinação]
+    E --> F[Resposta ao usuário com fonte citada]
+```
 
 ### Componentes
 
