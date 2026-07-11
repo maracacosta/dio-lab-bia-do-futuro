@@ -25,14 +25,32 @@
 ### Como os dados são carregados?
 > Descreva como seu agente acessa a base de conhecimento.
 
-[ex: Os JSON/CSV são carregados no início da sessão e incluídos no contexto do prompt]
+```PYTHON
+import pandas as pd
+import json
 
+historico = pd.read_csv ('data/historico_atendimento.csv')
+transacoes = pd.read_csv ('data/transacoes.csv')
+
+with open('data/perfil_investidor.json', 'w', encoding='utf-8') as f:   
+    perfil = json.load 
+
+with open('data/pprodutos_financeiros.json', 'w', encoding='utf-8') as f:   
+    produtos = json.load (f)
+```
 
 
 ### Como os dados são usados no prompt?
 > Os dados vão no system prompt? São consultados dinamicamente?
 
-[Sua descrição aqui]
+´´´text
+
+Dados e Perfil do Cliente
+
+Perfil de Investidor
+Carteira Atual 
+
+´´´
 
 ---
 
