@@ -2,17 +2,13 @@
 
 ## Dados Utilizados
 
-Descreva se usou os arquivos da pasta `data`, por exemplo:
-
-| Arquivo | Formato | Utilização no Agente |
+| Arquivo | Formato | Utilização no Capitá |
 |---------|---------|---------------------|
-| `historico_atendimento.csv` | CSV | Contextualizar interações anteriores |
-| `perfil_investidor.json` | JSON | Personalizar recomendações |
-| `produtos_financeiros.json` | JSON | Sugerir produtos adequados ao perfil |
-| `transacoes.csv` | CSV | Analisar padrão de gastos do cliente |
+| `historico_atendimento.csv` | CSV | Contextualizar conversas anteriores para continuidade nas conversas com coerência e agilidade |
+| `perfil_investidor.json` | JSON | Personalizar explicações e análises de contexto de acordo com o objetivo e perfil do usuário|
+| `produtos_financeiros.json` | JSON | Conhecer a fundo os produtos disponíveis para ensinar e sugerir didaticamente o usuário |
+| `transacoes.csv` | CSV | Analisar padrão de gastos do cliente e usar de forma direta e didática auxiliando o usuário|
 
-> [!TIP]
-> **Quer um dataset mais robusto?** Você pode utilizar datasets públicos do [Hugging Face](https://huggingface.co/datasets) relacionados a finanças, desde que sejam adequados ao contexto do desafio.
 
 ---
 
@@ -20,7 +16,7 @@ Descreva se usou os arquivos da pasta `data`, por exemplo:
 
 > Você modificou ou expandiu os dados mockados? Descreva aqui.
 
-[Sua descrição aqui]
+[Uso dos dados mockados]
 
 ---
 
