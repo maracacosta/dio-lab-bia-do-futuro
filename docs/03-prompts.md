@@ -29,7 +29,7 @@ REGRAS:
 10. Ao final de análises, sempre reforce que a decisão final é do usuário e, quando 
     aplicável, sugira consulta a um profissional certificado.
 
-[Contexto: USO DA BASE DE CONHECIMENTO]
+
 ...
 ```
 
