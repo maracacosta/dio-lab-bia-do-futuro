@@ -1,27 +1,54 @@
-import pandas as pd
 import json
+
+import pandas as pd
 import requests
 import streamlit as st
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODELO = "capita"  # nome do modelo criado no Ollama (Modelfile)
 
-st.set_page_config(page_title="Capitá - Agente Financeiro", page_icon="💰")
+OLLAMA_URL = "http://localhost:11434/api/generate"
+MODELO = "capita"
+
+st.set_page_config(
+    page_title="Capitá - Agente Financeiro",
+    page_icon="💰",
+    layout="centered"
+)
+
 
 @st.cache_data
 def carregar_dados():
-    perfil = json.load(open('./data/perfil_investidor.json', encoding='utf-8'))
-    produto = json.load(open('./data/produtos_financeiros.json', encoding='utf-8'))
-    transacoes = pd.read_csv('./data/transacoes.csv')
-    historico = pd.read_csv('./data/historico_atendimento.csv')
-    return perfil, produto, transacoes, historico
+    with open("./data/perfil_investidor.json", encoding="utf-8") as arquivo:
+        perfil = json.load(arquivo)
 
-perfil, produto, transacoes, historico = carregar_dados()
+    with open("./data/produtos_financeiros.json", encoding="utf-8") as arquivo:
+        produtos = json.load(arquivo)
 
-contexto = f"""
-CLIENTE = {perfil['nome']}, {perfil['idade']} anos, {perfil['perfil_investidor']}
-OBJETIVO = {perfil['objetivo_principal']}
-PATRIMÔNIO = R$ {perfil['patrimonio_total']} | RESERVA R$ {perfil['reserva_emergencia_atual']} | INVESTIDO R$ {perfil['investido_atual']}
+    transacoes = pd.read_csv("./data/transacoes.csv")
+    historico = pd.read_csv("./data/historico_atendimento.csv")
+
+    return perfil, produtos, transacoes, historico
+
+
+def formatar_moeda(valor):
+    try:
+        return f"R$ {float(valor):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    except (TypeError, ValueError):
+        return str(valor)
+
+
+def montar_contexto(perfil, produtos, transacoes, historico):
+    return f"""
+DADOS DO CLIENTE:
+- Nome: {perfil.get("nome", "Não informado")}
+- Idade: {perfil.get("idade", "Não informada")} anos
+- Profissão: {perfil.get("profissao", "Não informada")}
+- Renda mensal: {formatar_moeda(perfil.get("renda_mensal", 0))}
+- Perfil de investidor: {perfil.get("perfil_investidor", "Não informado")}
+- Aceita risco: {perfil.get("aceita_risco", "Não informado")}
+- Objetivo principal: {perfil.get("objetivo_principal", "Não informado")}
+- Patrimônio total: {formatar_moeda(perfil.get("patrimonio_total", 0))}
+- Reserva de emergência: {formatar_moeda(perfil.get("reserva_emergencia_atual", 0))}
+- Metas: {perfil.get("metas", "Não informadas")}
 
 TRANSAÇÕES RECENTES:
 {transacoes.to_string(index=False)}
@@ -30,81 +57,148 @@ ATENDIMENTOS ANTERIORES:
 {historico.to_string(index=False)}
 
 PRODUTOS FINANCEIROS DISPONÍVEIS:
-{json.dumps(produto, indent=2, ensure_ascii=False)}
+{json.dumps(produtos, indent=2, ensure_ascii=False)}
 """
 
-SYSTEM_PROMPT = """Você é o Capitá, um agente financeiro inteligente especializado em educação financeira,
-análise de mercado (ações, FIIs, renda fixa, tesouro direto, ETFs) e apoio à decisão de
-investidores pessoa física no Brasil.
 
-Seu objetivo é ajudar o usuário a entender conceitos financeiros e organizar seu raciocínio 
-de investimento, SEM nunca substituir um assessor de investimentos registrado na CVM.
-
-REGRAS:
-1. Sempre baseie suas respostas nos dados fornecidos na Base de Conhecimento ou nas APIs de 
-   mercado conectadas. Nunca invente cotações, indicadores ou notícias.
-2. Toda informação numérica (preço, indicador, percentual) deve citar a fonte e a data de 
-   atualização. Ex: "(Fonte: Brapi, atualizado em 11/07/2026)".
-3. Nunca recomende compra ou venda de um ativo específico sem antes confirmar que o usuário 
-   já preencheu o questionário de perfil de investidor (suitability).
-4. Se não tiver o dado solicitado, admita explicitamente e sugira uma fonte oficial 
-   (CVM, B3, RI da empresa) em vez de inferir ou aproximar.
-5. Não acesse, armazene ou solicite senhas, dados bancários ou credenciais de corretora.
-6. Não execute ordens de compra/venda nem finja ter executado qualquer ação real.
-7. Explique termos técnicos na primeira menção, entre parênteses, em linguagem acessível.
-8. Mantenha tom consultivo e educativo — nunca use linguagem de "hype" ou promessa de 
-   rentabilidade garantida.
-9. Se a pergunta estiver fora do escopo financeiro, redirecione educadamente para o 
-   domínio do agente.
-10. Ao final de análises, sempre reforce que a decisão final é do usuário e, quando 
-    aplicável, sugira consulta a um profissional certificado.
-
-...
-"""
-
-def perguntar(msg, historico_chat):
+def perguntar(pergunta, historico_chat, contexto):
     contexto_chat = "\n".join(
-        [f"{m['role'].upper()}: {m['content']}" for m in historico_chat[-6:]]
+        f"{mensagem['role'].upper()}: {mensagem['content']}"
+        for mensagem in historico_chat[-6:]
     )
-    prompt = f"""{SYSTEM_PROMPT}
+
+    prompt = f"""
+Use exclusivamente os dados abaixo como contexto do cliente.
+Se um dado não estiver disponível, informe claramente que não possui essa informação.
+Não invente cotações, indicadores, notícias ou produtos financeiros.
 
 CONTEXTO DO CLIENTE:
 {contexto}
 
-HISTÓRICO DA CONVERSA:
+HISTÓRICO RECENTE DA CONVERSA:
 {contexto_chat}
 
-PERGUNTA DO CLIENTE: {msg}"""
+PERGUNTA ATUAL DO CLIENTE:
+{pergunta}
+"""
 
     try:
-        r = requests.post(
+        resposta = requests.post(
             OLLAMA_URL,
-            json={"model": MODELO, "prompt": prompt, "stream": False},
-            timeout=60
+            json={
+                "model": MODELO,
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=120
         )
-        r.raise_for_status()
-        return r.json()['response']
-    except requests.exceptions.ConnectionError:
-        return "Não consegui me conectar ao modelo local. Verifique se o Ollama está em execução."
-    except requests.exceptions.Timeout:
-        return "O modelo demorou demais para responder. Tente novamente."
-    except Exception as e:
-        return f"Ocorreu um erro inesperado: {e}"
 
-st.title("Capitá - Agente Financeiro Inteligente")
+        resposta.raise_for_status()
+
+        dados_resposta = resposta.json()
+        return dados_resposta.get(
+            "response",
+            "Não consegui gerar uma resposta neste momento."
+        )
+
+    except requests.exceptions.ConnectionError:
+        return (
+            "Não consegui me conectar ao Ollama. Confirme se o Ollama está aberto "
+            "e se o modelo 'capita' foi criado corretamente."
+        )
+
+    except requests.exceptions.Timeout:
+        return (
+            "O modelo demorou mais do que o esperado para responder. "
+            "Tente uma pergunta mais curta ou aguarde o carregamento do modelo."
+        )
+
+    except requests.exceptions.HTTPError as erro:
+        return f"Erro na API do Ollama: {erro}"
+
+    except ValueError:
+        return "O Ollama retornou uma resposta em formato inválido."
+
+    except Exception as erro:
+        return f"Ocorreu um erro inesperado: {erro}"
+
+
+try:
+    perfil, produtos, transacoes, historico_atendimento = carregar_dados()
+    contexto = montar_contexto(
+        perfil,
+        produtos,
+        transacoes,
+        historico_atendimento
+    )
+
+except FileNotFoundError as erro:
+    st.error(f"Arquivo não encontrado: {erro.filename}")
+    st.stop()
+
+except json.JSONDecodeError as erro:
+    st.error(f"Erro de formato em um arquivo JSON: {erro}")
+    st.stop()
+
+except Exception as erro:
+    st.error(f"Erro ao carregar os dados: {erro}")
+    st.stop()
+
+
+st.title("💰 Capitá")
+st.caption("Agente de educação financeira e apoio à decisão.")
+
+with st.sidebar:
+    st.subheader("Perfil do cliente")
+    st.write(f"**Nome:** {perfil.get('nome', 'Não informado')}")
+    st.write(f"**Perfil:** {perfil.get('perfil_investidor', 'Não informado')}")
+    st.write(f"**Objetivo:** {perfil.get('objetivo_principal', 'Não informado')}")
+
+    if st.button("Limpar conversa"):
+        st.session_state.chat_history = []
+        st.rerun()
+
 
 if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
+    st.session_state.chat_history = [
+        {
+            "role": "assistant",
+            "content": (
+                f"Olá, {perfil.get('nome', '')}! Sou o Capitá. "
+                "Posso ajudar você a entender investimentos, produtos financeiros "
+                "e a organizar seu planejamento financeiro."
+            )
+        }
+    ]
 
-for msg in st.session_state.chat_history:
-    st.chat_message(msg["role"]).write(msg["content"])
 
-if pergunta:= st.chat_input("Faça sua pergunta sobre investimentos, finanças pessoais ou produtos financeiros:"):
-    st.session_state.chat_history.append({"role": "user", "content": pergunta})
-    st.chat_message("user").write(pergunta)
+for mensagem in st.session_state.chat_history:
+    with st.chat_message(mensagem["role"]):
+        st.write(mensagem["content"])
 
-    with st.spinner("Capitá está analisando..."):
-        resposta = perguntar(pergunta, st.session_state.chat_history)
 
-    st.session_state.chat_history.append({"role": "assistant", "content": resposta})
-    st.chat_message("assistant").write(resposta)
+pergunta = st.chat_input(
+    "Faça sua pergunta sobre investimentos, finanças pessoais ou produtos financeiros:"
+)
+
+if pergunta:
+    st.session_state.chat_history.append(
+        {"role": "user", "content": pergunta}
+    )
+
+    with st.chat_message("user"):
+        st.write(pergunta)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Capitá está analisando..."):
+            resposta = perguntar(
+                pergunta,
+                st.session_state.chat_history,
+                contexto
+            )
+
+        st.write(resposta)
+
+    st.session_state.chat_history.append(
+        {"role": "assistant", "content": resposta}
+    )
