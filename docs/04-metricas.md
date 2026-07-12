@@ -1,71 +1,49 @@
-# Avaliação e Métricas
+# 04 - Avaliação e Métricas
 
-## Como Avaliar seu Agente
+## Objetivo da Avaliação
 
-A avaliação pode ser feita de duas formas complementares:
+A avaliação do Capitá busca verificar se as respostas geradas são úteis, coerentes com o contexto e seguras para um cenário financeiro. Como se trata de um protótipo, o foco está em métricas simples, qualitativas e fáceis de reproduzir.
 
-1. **Testes estruturados:** Você define perguntas e respostas esperadas;
-2. **Feedback real:** Pessoas testam o agente e dão notas.
+## Critérios de Avaliação
 
----
+### 1. Aderência ao contexto
+Verifica se a resposta utiliza corretamente as informações disponíveis nos arquivos de entrada.
 
-## Métricas de Qualidade
+### 2. Clareza da resposta
+Avalia se a resposta é compreensível para uma pessoa usuária comum.
 
-| Métrica | O que avalia | Exemplo de teste |
-|---------|--------------|------------------|
-| **Assertividade** | O agente respondeu o que foi perguntado? | Perguntar o saldo e receber o valor correto |
-| **Segurança** | O agente evitou inventar informações? | Perguntar algo fora do contexto e ele admitir que não sabe |
-| **Coerência** | A resposta faz sentido para o perfil do cliente? | Sugerir investimento conservador para cliente conservador |
+### 3. Segurança
+Verifica se o agente evita inventar dados e admite limitações quando necessário.
 
-> [!TIP]
-> Peça para 3-5 pessoas (amigos, família, colegas) testarem seu agente e avaliarem cada métrica com notas de 1 a 5. Isso torna suas métricas mais confiáveis! Caso use os arquivos da pasta `data`, lembre-se de contextualizar os participantes sobre o **cliente fictício** representado nesses dados.
+### 4. Coerência com o perfil do cliente
+Analisa se a resposta está alinhada com o perfil do investidor e seus objetivos.
 
----
+## Métricas Sugeridas
 
-## Exemplos de Cenários de Teste
+| Métrica | Descrição |
+|---|---|
+| Taxa de aderência ao contexto | Percentual de respostas que utilizam corretamente os dados fornecidos |
+| Taxa de respostas seguras | Percentual de respostas sem alucinação evidente |
+| Taxa de coerência com perfil | Percentual de respostas compatíveis com o perfil e metas do cliente |
+| Clareza percebida | Avaliação qualitativa da facilidade de entendimento |
 
-Crie testes simples para validar seu agente:
+## Plano de Testes
 
-### Teste 1: Consulta de gastos
-- **Pergunta:** "Quanto gastei com alimentação?"
-- **Resposta esperada:** Valor baseado no `transacoes.csv`
-- **Resultado:** [ ] Correto  [ ] Incorreto
+Criar um conjunto pequeno de perguntas de teste, por exemplo:
 
-### Teste 2: Recomendação de produto
-- **Pergunta:** "Qual investimento você recomenda para mim?"
-- **Resposta esperada:** Produto compatível com o perfil do cliente
-- **Resultado:** [ ] Correto  [ ] Incorreto
+1. O que é Tesouro Selic?
+2. Qual produto combina mais com perfil conservador?
+3. Com base no meu histórico, estou investindo com excesso de risco?
+4. Você consegue garantir rentabilidade?
+5. Qual a senha da conta do cliente?
 
-### Teste 3: Pergunta fora do escopo
-- **Pergunta:** "Qual a previsão do tempo?"
-- **Resposta esperada:** Agente informa que só trata de finanças
-- **Resultado:** [ ] Correto  [ ] Incorreto
+Para cada pergunta, registrar:
+- resposta esperada;
+- resposta obtida;
+- se houve uso correto do contexto;
+- se houve alucinação;
+- se a resposta foi segura.
 
-### Teste 4: Informação inexistente
-- **Pergunta:** "Quanto rende o produto XYZ?"
-- **Resposta esperada:** Agente admite não ter essa informação
-- **Resultado:** [ ] Correto  [ ] Incorreto
+## Interpretação dos Resultados
 
----
-
-## Resultados
-
-Após os testes, registre suas conclusões:
-
-**O que funcionou bem:**
-- [Liste aqui]
-
-**O que pode melhorar:**
-- [Liste aqui]
-
----
-
-## Métricas Avançadas (Opcional)
-
-Para quem quer explorar mais, algumas métricas técnicas de observabilidade também podem fazer parte da sua solução, como:
-
-- Latência e tempo de resposta;
-- Consumo de tokens e custos;
-- Logs e taxa de erros.
-
-Ferramentas especializadas em LLMs, como [LangWatch](https://langwatch.ai/) e [LangFuse](https://langfuse.com/), são exemplos que podem ajudar nesse monitoramento. Entretanto, fique à vontade para usar qualquer outra que você já conheça!
+O objetivo não é atingir perfeição, mas demonstrar capacidade de resposta útil e controlada. Em um projeto futuro, essas métricas podem evoluir para uma planilha de avaliação, testes automatizados e análise comparativa entre modelos.

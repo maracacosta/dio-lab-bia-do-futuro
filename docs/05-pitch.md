@@ -1,44 +1,21 @@
-# Pitch (3 minutos)
+# 05 - Pitch
 
-> [!TIP]
-> Você pode usar alguns slides pra apoiar no seu Pitch e mostrar sua solução na prática.
- 
-## Roteiro Sugerido
+## Roteiro de Pitch - 3 Minutos
 
-### 1. O Problema (30 seg)
-> Qual dor do cliente você resolve?
+### 1. Problema
+Muitas pessoas querem investir melhor, mas não sabem por onde começar, não entendem bem seu próprio perfil financeiro e acabam tomando decisões com base em informações superficiais ou pouco confiáveis.
 
-[Sua descrição aqui]
+### 2. Solução
+Para ajudar nesse cenário, eu desenvolvi o **Capitá**, um agente financeiro inteligente com IA Generativa, criado para responder dúvidas, explicar conceitos e analisar o contexto do cliente com base em uma base de conhecimento estruturada.
 
-### 2. A Solução (1 min)
-> Como seu agente resolve esse problema?
+### 3. Como Funciona
+O usuário interage com um chatbot desenvolvido em Streamlit. A aplicação carrega dados mockados sobre perfil do investidor, produtos financeiros, histórico de transações e atendimentos anteriores. Em seguida, essas informações são consolidadas em um contexto e enviadas para um modelo local executado via Ollama.
 
-[Sua descrição aqui]
+### 4. Diferencial
+O diferencial do projeto é combinar simplicidade com responsabilidade. Em vez de apenas responder qualquer pergunta, o agente foi desenhado para reconhecer limites, evitar alucinações e manter coerência com o perfil do cliente.
 
-### 3. Demonstração (1 min)
-> Mostre o agente funcionando (pode ser gravação de tela)
+### 5. Valor
+Esse tipo de solução pode ser útil como ponto de entrada para educação financeira, triagem inicial de atendimento e organização do contexto do cliente antes de uma análise humana mais aprofundada.
 
-[Descreva o que será mostrado]
-
-### 4. Diferencial e Impacto (30 seg)
-> Por que essa solução é inovadora e qual é o impacto dela na sociedade?
-
-[Sua descrição aqui]
-
----
-
-## Checklist do Pitch
-
-- [ ] Duração máxima de 3 minutos
-- [ ] Problema claramente definido
-- [ ] Solução demonstrada na prática
-- [ ] Diferencial explicado
-- [ ] Áudio e vídeo com boa qualidade
-
----
-
-## Link do Vídeo
-
-> Cole aqui o link do seu pitch (YouTube, Loom, Google Drive, etc.)
-
-[Link do vídeo]
+### 6. Próximos Passos
+Como evolução, pretendo expandir a base de conhecimento, integrar dados de mercado, implementar avaliação automatizada e evoluir a arquitetura para recuperação semântica com RAG.

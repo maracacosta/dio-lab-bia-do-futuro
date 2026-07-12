@@ -1,91 +1,38 @@
-# Base de Conhecimento
+# 02 - Base de Conhecimento
 
-## Dados Utilizados
+## Visão Geral
 
-| Arquivo | Formato | Utilização no Capitá |
-|---------|---------|---------------------|
-| `historico_atendimento.csv` | CSV | Contextualizar conversas anteriores para continuidade nas conversas com coerência e agilidade |
-| `perfil_investidor.json` | JSON | Personalizar explicações e análises de contexto de acordo com o objetivo e perfil do usuário|
-| `produtos_financeiros.json` | JSON | Conhecer a fundo os produtos disponíveis para ensinar e sugerir didaticamente o usuário |
-| `transacoes.csv` | CSV | Analisar padrão de gastos do cliente e usar de forma direta e didática auxiliando o usuário|
+A base de conhecimento do Capitá foi construída com dados mockados organizados em arquivos estruturados. Essa abordagem facilita testes, evita exposição de dados sensíveis e permite simular situações reais de atendimento financeiro.
 
+## Arquivos Utilizados
 
----
+| Arquivo | Formato | Finalidade |
+|---|---|---|
+| `perfil_investidor.json` | JSON | Armazenar perfil, objetivos, renda e apetite a risco do cliente |
+| `produtos_financeiros.json` | JSON | Catálogo de produtos financeiros disponíveis |
+| `transacoes.csv` | CSV | Histórico de transações e movimentações |
+| `historico_atendimento.csv` | CSV | Registro de interações anteriores com o cliente |
 
-## Adaptações nos Dados
+## Estratégia de Uso
 
-> Você modificou ou expandiu os dados mockados? Descreva aqui.
+A aplicação carrega esses arquivos no início da execução e monta um contexto textual consolidado. Esse contexto é enviado ao modelo local para que ele gere respostas com base nas informações disponíveis e evite responder de forma genérica.
 
-[Uso dos dados mockados]
+## Vantagens da Abordagem
 
----
+- Simplicidade de implementação.
+- Facilidade para inspeção dos dados.
+- Reprodutibilidade do experimento.
+- Boa aderência a um protótipo educacional.
 
-## Estratégia de Integração
+## Cuidados Tomados
 
-### Como os dados são carregados?
-> Descreva como seu agente acessa a base de conhecimento.
+- Uso de dados fictícios para reduzir riscos com privacidade.
+- Separação entre dados do cliente, produtos e histórico.
+- Possibilidade de expansão futura para RAG e armazenamento vetorial.
 
-```PYTHON
-import pandas as pd
-import json
+## Próximas Evoluções
 
-historico = pd.read_csv ('data/historico_atendimento.csv')
-transacoes = pd.read_csv ('data/transacoes.csv')
-
-with open('data/perfil_investidor.json', 'w', encoding='utf-8') as f:   
-    perfil = json.load 
-
-with open('data/pprodutos_financeiros.json', 'w', encoding='utf-8') as f:   
-    produtos = json.load (f)
-```
-
-
-### Como os dados são usados no prompt?
-> Os dados vão no system prompt? São consultados dinamicamente?
-
-´´´text
-
-Dados e Perfil do Cliente
-{
-  "nome": "João Silva",
-  "idade": 32,
-  "profissao": "Analista de Sistemas",
-  "renda_mensal": 5000.00,
-  "perfil_investidor": "moderado",
-  "objetivo_principal": "Construir reserva de emergência",
-  "patrimonio_total": 15000.00,
-  "reserva_emergencia_atual": 10000.00,
-  "aceita_risco": false,
-  "metas": [
-    {
-      "meta": "Completar reserva de emergência",
-      "valor_necessario": 15000.00,
-      "prazo": "2026-06"
-    },
-    {
-      "meta": "Entrada do apartamento",
-      "valor_necessario": 50000.00,
-      "prazo": "2027-12"
-    }
-  ]
-}
-´´´
-
----
-
-## Exemplo de Contexto Montado
-
-> Mostre um exemplo de como os dados são formatados para o agente.
-
-```
-Dados do Cliente:
-- Nome: João Silva
-- Idade : 32
-- Perfil: Moderado
-- Saldo disponível: R$ 5.000
-
-Últimas transações:
-- 01/11: Supermercado - R$ 450
-- 03/11: Streaming - R$ 55
-...
-```
+- Adicionar documentos institucionais como fonte complementar.
+- Integrar dados de mercado com atualização periódica.
+- Criar camada de recuperação semântica.
+- Implementar validação automática da qualidade dos dados.
